@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "updatedAt": "2026-11-08",
   "note": "平日の基本プラン。土日は日付ごとの overrides で指定します。",
   "weekly": {
@@ -390,21 +390,15 @@
   "rewards": [
     {
       "id": "r1",
-      "pts": 5,
+      "pts": 7,
       "name": "すきな おやつ",
-      "icon": "🍦"
+      "icon": "🍪"
     },
     {
       "id": "r2",
-      "pts": 10,
-      "name": "おでかけ",
-      "icon": "🎡"
-    },
-    {
-      "id": "r3",
-      "pts": 20,
-      "name": "ほしい おもちゃ",
-      "icon": "🧸"
+      "pts": 21,
+      "name": "シール 1まい",
+      "icon": "🌟"
     }
   ]
 }
