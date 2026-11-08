@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="よてい">
+<meta name="apple-mobile-web-app-title" content="さらの よてい">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#FFE6F1">
-<title>わたしの よてい</title>
+<title>さらの よてい</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -161,7 +161,7 @@ svg.ring{display:block;width:100%;height:auto;overflow:visible}
 <div class="deco" aria-hidden="true" id="deco"></div>
 <div class="app">
 <div class="top">
-<div><h1>わたしの よてい</h1><div class="date" id="date"></div></div>
+<div><h1>さらの よてい</h1><div class="date" id="date"></div></div>
 <div class="tools">
 <button class="iconbtn" id="mute" aria-label="おとのオンオフ">🔔</button>
 <div class="gearwrap"><button class="iconbtn" id="gear" aria-label="おうちの方へ（ながおし）">⚙️</button><span class="hint">ながおし</span></div>
@@ -188,7 +188,13 @@ svg.ring{display:block;width:100%;height:auto;overflow:visible}
 var DN=['日','月','火','水','木','金','土'];
 var AN=['🐥','🐰','🐱','🐻','🐹','🦊','🐼'];
 var ORDER=[1,2,3,4,5,6,0];
-var KEY='kids-schedule-v2',PKEY='kids-plans-cache-v1';
+// 保存キーは「このページの場所(パス)」ごとに分けます。同じiPadで別のアプリ(別リポジトリ・別フォルダ)を開いても、記録が混ざりません。
+var NS=location.pathname.replace(/index\.html$/,'').replace(/\/?$/,'/');
+var KEY='kids-schedule-v2:'+NS,PKEY='kids-plans-cache-v1:'+NS;
+var OLDKEY='kids-schedule-v2',OLDPKEY='kids-plans-cache-v1';
+// 旧バージョン（場所を区別しない保存キー）のデータを、この場所の保存キーへ一度だけ引き継ぎます。
+// 別のアプリとして複製して使う場合（息子用など）は false にしてください。
+var MIGRATE_LEGACY=true;
 var H='M12 21C5 16.5 2 12.8 2 9a5 5 0 0 1 10-1.5A5 5 0 0 1 22 9c0 3.8-3 7.5-10 12z';
 var REDUCE=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var DEFAULT_PLANS={"version":1,"updatedAt":"2026-11-07","note":"仮のサンプルです。実際の予定に置き換えてください。","weekly":{"0":{"range":["07:00","21:00"],"tasks":[{"id":"breakfast","name":"あさごはん","icon":"🍞","start":"07:00","end":"08:00"},{"id":"free1","name":"じゆうじかん","icon":"🎈","start":"08:00","end":"09:00"},{"id":"homework","name":"しゅくだい","icon":"📝","start":"09:00","end":"10:00"},{"id":"study","name":"じしゅう","icon":"📚","start":"10:00","end":"10:45"},{"id":"play","name":"あそぶ","icon":"🎮","start":"10:45","end":"12:00"},{"id":"lunch","name":"ひるごはん","icon":"🍝","start":"12:00","end":"13:00"},{"id":"outing","name":"おでかけ・じゆう","icon":"🧸","start":"13:00","end":"17:00"},{"id":"dinner","name":"ゆうごはん","icon":"🍚","start":"18:00","end":"19:00"},{"id":"bath","name":"おふろ","icon":"🛁","start":"19:00","end":"19:45"},{"id":"bed","name":"ねるじゅんび","icon":"🌙","start":"20:00","end":"21:00"}]},"1":{"range":["15:00","21:00"],"tasks":[{"id":"snack","name":"おやつ","icon":"🍪","start":"15:00","end":"15:30"},{"id":"lesson","name":"ピアノ","icon":"🎹","start":"15:30","end":"16:30"},{"id":"homework","name":"しゅくだい","icon":"📝","start":"16:30","end":"17:15"},{"id":"study","name":"じしゅう","icon":"📚","start":"17:15","end":"17:45"},{"id":"dinner","name":"ゆうごはん","icon":"🍚","start":"17:45","end":"18:30"},{"id":"bath","name":"おふろ","icon":"🛁","start":"18:30","end":"19:15"},{"id":"play","name":"あそぶ","icon":"🎮","start":"19:15","end":"20:00"},{"id":"bed","name":"ねるじゅんび","icon":"🌙","start":"20:00","end":"21:00"}]},"2":{"range":["15:00","21:00"],"tasks":[{"id":"snack","name":"おやつ","icon":"🍪","start":"15:00","end":"15:30"},{"id":"lesson","name":"スイミング","icon":"🏊","start":"15:30","end":"16:30"},{"id":"homework","name":"しゅくだい","icon":"📝","start":"16:30","end":"17:15"},{"id":"study","name":"じしゅう","icon":"📚","start":"17:15","end":"17:45"},{"id":"dinner","name":"ゆうごはん","icon":"🍚","start":"17:45","end":"18:30"},{"id":"bath","name":"おふろ","icon":"🛁","start":"18:30","end":"19:15"},{"id":"play","name":"あそぶ","icon":"🎮","start":"19:15","end":"20:00"},{"id":"bed","name":"ねるじゅんび","icon":"🌙","start":"20:00","end":"21:00"}]},"3":{"range":["15:00","21:00"],"tasks":[{"id":"snack","name":"おやつ","icon":"🍪","start":"15:00","end":"15:30"},{"id":"homework","name":"しゅくだい","icon":"📝","start":"15:30","end":"16:15"},{"id":"study","name":"じしゅう","icon":"📚","start":"16:15","end":"16:45"},{"id":"dinner","name":"ゆうごはん","icon":"🍚","start":"16:45","end":"17:30"},{"id":"bath","name":"おふろ","icon":"🛁","start":"17:30","end":"18:15"},{"id":"play","name":"あそぶ","icon":"🎮","start":"18:15","end":"20:00"},{"id":"bed","name":"ねるじゅんび","icon":"🌙","start":"20:00","end":"21:00"}]},"4":{"range":["15:00","21:00"],"tasks":[{"id":"snack","name":"おやつ","icon":"🍪","start":"15:00","end":"15:30"},{"id":"lesson","name":"えいかいわ","icon":"🗣️","start":"15:30","end":"16:30"},{"id":"homework","name":"しゅくだい","icon":"📝","start":"16:30","end":"17:15"},{"id":"study","name":"じしゅう","icon":"📚","start":"17:15","end":"17:45"},{"id":"dinner","name":"ゆうごはん","icon":"🍚","start":"17:45","end":"18:30"},{"id":"bath","name":"おふろ","icon":"🛁","start":"18:30","end":"19:15"},{"id":"play","name":"あそぶ","icon":"🎮","start":"19:15","end":"20:00"},{"id":"bed","name":"ねるじゅんび","icon":"🌙","start":"20:00","end":"21:00"}]},"5":{"range":["15:00","21:00"],"tasks":[{"id":"snack","name":"おやつ","icon":"🍪","start":"15:00","end":"15:30"},{"id":"lesson","name":"ダンス","icon":"💃","start":"15:30","end":"16:30"},{"id":"homework","name":"しゅくだい","icon":"📝","start":"16:30","end":"17:15"},{"id":"study","name":"じしゅう","icon":"📚","start":"17:15","end":"17:45"},{"id":"dinner","name":"ゆうごはん","icon":"🍚","start":"17:45","end":"18:30"},{"id":"bath","name":"おふろ","icon":"🛁","start":"18:30","end":"19:15"},{"id":"play","name":"あそぶ","icon":"🎮","start":"19:15","end":"20:00"},{"id":"bed","name":"ねるじゅんび","icon":"🌙","start":"20:00","end":"21:00"}]},"6":{"range":["07:00","21:00"],"tasks":[{"id":"breakfast","name":"あさごはん","icon":"🍞","start":"07:00","end":"08:00"},{"id":"free1","name":"じゆうじかん","icon":"🎈","start":"08:00","end":"09:00"},{"id":"homework","name":"しゅくだい","icon":"📝","start":"09:00","end":"10:00"},{"id":"study","name":"じしゅう","icon":"📚","start":"10:00","end":"10:45"},{"id":"play","name":"あそぶ","icon":"🎮","start":"10:45","end":"12:00"},{"id":"lunch","name":"ひるごはん","icon":"🍝","start":"12:00","end":"13:00"},{"id":"outing","name":"おでかけ・じゆう","icon":"🧸","start":"13:00","end":"17:00"},{"id":"dinner","name":"ゆうごはん","icon":"🍚","start":"18:00","end":"19:00"},{"id":"bath","name":"おふろ","icon":"🛁","start":"19:00","end":"19:45"},{"id":"bed","name":"ねるじゅんび","icon":"🌙","start":"20:00","end":"21:00"}]}},"overrides":{},"rewards":[{"id":"r1","pts":5,"name":"すきな おやつ","icon":"🍦"},{"id":"r2","pts":10,"name":"おでかけ","icon":"🎡"},{"id":"r3","pts":20,"name":"ほしい おもちゃ","icon":"🧸"}]};
@@ -213,7 +219,17 @@ var cut=new Date();cut.setDate(cut.getDate()-150);var cs=iso(cut);
 Object.keys(o.done).forEach(function(k){if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&k<cs)delete o.done[k];});
 return o;
 }
-function load(){try{var j=localStorage.getItem(KEY);if(j){var o=JSON.parse(j);if(o&&typeof o==='object')return normS(o);}}catch(e){}return normS({});}
+function migrateLegacy(){
+try{
+if(!MIGRATE_LEGACY||localStorage.getItem(KEY))return;
+var old=localStorage.getItem(OLDKEY);
+if(!old)return;
+localStorage.setItem(KEY,old);localStorage.removeItem(OLDKEY);
+var op=localStorage.getItem(OLDPKEY);
+if(op){localStorage.setItem(PKEY,op);localStorage.removeItem(OLDPKEY);}
+}catch(e){}
+}
+function load(){migrateLegacy();try{var j=localStorage.getItem(KEY);if(j){var o=JSON.parse(j);if(o&&typeof o==='object')return normS(o);}}catch(e){}return normS({});}
 var S=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 
@@ -233,7 +249,7 @@ if(seen[id]){errs.push(label+'：id「'+id+'」が重複しています');return
 seen[id]=1;
 if(isNaN(s)||isNaN(e)||e<=s){errs.push(label+'「'+nm+'」：start/end が正しくありません');return;}
 if(s<r[0]||e>r[1]){errs.push(label+'「'+nm+'」：range の外にあります');return;}
-tasks.push({id:id,name:String(nm),icon:String(t.icon||'⭐'),s:s,e:e});
+tasks.push({id:id,name:String(nm),icon:String(t.icon||'⭐'),memo:t.memo?String(t.memo):'',s:s,e:e});
 });
 tasks.sort(function(a,b){return a.s-b.s;});
 for(var i=1;i<tasks.length;i++){if(tasks[i].s<tasks[i-1].e)errs.push(label+'：「'+tasks[i-1].name+'」と「'+tasks[i].name+'」が重なっています');}
@@ -387,7 +403,7 @@ $('ring').innerHTML=h;
 }
 function renderStatus(){
 var d=view,st=stats(),P=st.P,nm=nowMin(),isT=d===todayIdx(),h='';
-if(!P.length){h='まだ よていが ないよ<small>おうちの ひとに へんしゅうして もらってね</small>';}
+if(!P.length){h='まだ よていが ないよ<small>おうちの ひとに きいてね</small>';}
 else if(!isT){var dd=dateOf(d),past=weekDate(d)<iso(new Date());h=(dd.getMonth()+1)+'/'+dd.getDate()+' ('+DN[d]+') の よてい<small>'+(past?'すんだ ひ： '+st.n+' / '+P.length+' できたよ':'ぜんぶで '+P.length+'こ あるよ')+'</small>';}
 else{
 var cur=null,next=null,i;
@@ -395,7 +411,7 @@ for(i=0;i<P.length;i++){if(nm>=P[i].s&&nm<P[i].e){cur=P[i];break;}}
 for(i=0;i<P.length;i++){if(P[i].s>nm){next=P[i];break;}}
 if(cur){
 var left=Math.max(1,Math.ceil(cur.e-nm));
-h=isDone(d,cur.id)?'「'+esc(cur.name)+'」は できたよ！'+'<small>えらい！ つぎも がんばろうね</small>':'いまは「'+esc(cur.name)+'」のじかん '+esc(cur.icon)+'<small>あと '+left+' ふん</small>';
+h=isDone(d,cur.id)?'「'+esc(cur.name)+'」は できたよ！'+'<small>えらい！ つぎも がんばろうね</small>':'いまは「'+esc(cur.name)+'」のじかん '+esc(cur.icon)+'<small>あと '+left+' ふん'+(cur.memo?'<br>'+esc(cur.memo):'')+'</small>';
 }else if(next){
 var w=Math.ceil(next.s-nm);
 h='つぎは「'+esc(next.name)+'」 '+esc(next.icon)+'<small>'+fmt(next.s)+' から（あと '+w+' ふん）</small>';
@@ -410,10 +426,10 @@ $('hearts').innerHTML=h;
 }
 function renderList(){
 var st=stats(),P=st.P,nm=nowMin(),isT=view===todayIdx(),h='';
-if(!P.length)h='<div class="empty">よていが ないよ。<br>ギアを ながおしして ふやしてね。</div>';
+if(!P.length)h='<div class="empty">きょうは よていが ないよ。<br>おうちの ひとに きいてね。</div>';
 for(var i=0;i<P.length;i++){
 var t=P[i],dn=isDone(view,t.id),cur=isT&&nm>=t.s&&nm<t.e;
-h+='<button class="task'+(dn?' done':'')+(cur?' cur':'')+'" data-id="'+t.id+'" aria-pressed="'+dn+'"><span class="ic">'+esc(t.icon)+'</span><span class="nm">'+esc(t.name)+'<span class="tm">'+fmt(t.s)+' - '+fmt(t.e)+'</span></span><svg class="ck" viewBox="0 0 48 48">'+heart(24,24,1.7,dn?'#FF6FA8':'none',dn?'#D93F7E':'#ED93B1')+'</svg></button>';
+h+='<button class="task'+(dn?' done':'')+(cur?' cur':'')+'" data-id="'+t.id+'" aria-pressed="'+dn+'"><span class="ic">'+esc(t.icon)+'</span><span class="nm">'+esc(t.name)+'<span class="tm">'+fmt(t.s)+' - '+fmt(t.e)+'</span>'+(t.memo?'<span class="tm" style="color:var(--ink)">'+esc(t.memo)+'</span>':'')+'</span><svg class="ck" viewBox="0 0 48 48">'+heart(24,24,1.7,dn?'#FF6FA8':'none',dn?'#D93F7E':'#ED93B1')+'</svg></button>';
 }
 $('list').innerHTML=h;
 }
@@ -468,7 +484,7 @@ function renderParent(){
 var t=total(),R=sortedRew();
 var src=plSource==='online'?'オンラインから取得した予定を使用中':(plSource==='cache'?'保存済みの予定を使用中（最後に取得できたもの）':'アプリ内蔵のサンプルを使用中');
 var h='<div class="panel"><h2>おうちの方へ</h2><p>保護者向けの画面です。ここで予定ファイルの状態確認・ポイント補正・バックアップができます。</p>';
-h+='<div class="sub" style="margin:0 0 6px">予定ファイル（plans.json）</div><dl class="kv"><dt>状態</dt><dd>'+esc(src)+'</dd><dt>版</dt><dd>'+esc(PL.updatedAt||'-')+'（version '+esc(PL.version||'-')+'）</dd><dt>最後に取得</dt><dd>'+esc(hmNow(lastOk))+(netFail?'（通信できませんでした）':'')+'</dd></dl>';
+h+='<div class="sub" style="margin:0 0 6px">予定ファイル（plans.json）</div><dl class="kv"><dt>状態</dt><dd>'+esc(src)+'</dd><dt>版</dt><dd>'+esc(PL.updatedAt||'-')+'（version '+esc(PL.version||'-')+'）</dd><dt>最後に取得</dt><dd>'+esc(hmNow(lastOk))+(netFail?'（通信できませんでした）':'')+'</dd><dt>保存先</dt><dd>'+esc(NS)+'</dd></dl>';
 if(plErr.length){h+='<div class="errs on">plans.json にエラーがあるため、前の予定を使っています：<br>'+plErr.slice(0,6).map(esc).join('<br>')+'</div>';}
 h+='<div class="btns" style="margin:0 0 14px"><button class="btn sec" data-act="refresh">いま更新する</button></div>';
 h+='<div class="sub" style="margin:0 0 6px">ポイント：<b id="ptv">'+t+'</b></div><div class="btns" style="margin:0 0 6px"><button class="btn sec" data-act="padj" data-v="-1">− 1</button><button class="btn sec" data-act="padj" data-v="1">＋ 1</button><button class="btn sec" data-act="preset">'+(pArm?'本当に 0 に戻す？':'0 に戻す')+'</button></div>';
